@@ -14,6 +14,8 @@ import com.example.learningcoroutines.data.repo.UserRepoImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -24,11 +26,11 @@ class PlaceholderFragment : Fragment() {
         pageViewModel = ViewModelProviders.of(this).get(PageViewModel::class.java).apply {
             setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
         }
-        GlobalScope.launch(Dispatchers.Main) {
+        /*GlobalScope.launch(Dispatchers.Main) {
             pageViewModel.fetchAndShowUser(UserRepoImpl())
-        }
+        }*/
+        pageViewModel.fetchAndShowUser(UserRepoImpl())
 
-        Log.i("PageViewModel", "outside in main loop")
     }
 
 

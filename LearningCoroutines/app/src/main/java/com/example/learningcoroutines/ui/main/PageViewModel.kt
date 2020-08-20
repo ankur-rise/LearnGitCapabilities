@@ -21,31 +21,52 @@ class PageViewModel constructor() : ViewModel() {
         _index.value = index
     }
 
-    suspend fun fetchAndShowUser(repo: UserRepoImpl) {
-            val userDef = fetchUser(repo)
-            userDef.await()
-        if(userDef.isCompleted) {
-            val user = userDef.getCompleted()
-            user.name = "ankur chaudahry"
-            showUser(user)
-        }
-            val user2 = fetchSecondUser(repo)
-            showUser(user2)
+     fun fetchAndShowUser_2(repo: UserRepoImpl) {
+        GlobalScope.async (Dispatchers.IO){
 
-        Log.i("PageViewModel","Both user printed")
         }
+        GlobalScope.launch(Dispatchers.Main){
+            val user1 = fetchFirstUser_2(repo)
+            val user2 = fetchSecondUser_2(repo)
 
-    private suspend fun fetchUser(repo: UserRepoImpl): Deferred<User> {
-         return GlobalScope.async(Dispatchers.IO) {
-            Thread.sleep(1000L)
-             repo.fetchUser()
+            Log.i("PageViewModel", user1.name.plus(" ").plus(user2.name))
         }
     }
 
-    private suspend fun fetchSecondUser(repo: UserRepoImpl) : User? {
-        return GlobalScope.async(Dispatchers.IO) {
+    private suspend fun fetchFirstUser_2(repo: UserRepoImpl): User {
+        return withContext(Dispatchers.IO) {
+            Thread.sleep(1000L)
             repo.fetchUser()
-        }.await()
+        }
+    }
+    private suspend fun fetchSecondUser_2(repo: UserRepoImpl): User {
+        return withContext(Dispatchers.IO) {
+            repo.fetchUser()
+        }
+    }
+
+     fun fetchAndShowUser(repo: UserRepoImpl) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val userDef = withContext(Dispatchers.IO){fetchUser(repo)}
+
+            val user2 = fetchSecondUser(repo)
+            showUser(userDef)
+            showUser(user2)
+
+            Log.i("PageViewModel","Both user printed")
+        }
+     }
+
+    private suspend fun fetchUser(repo: UserRepoImpl): User {
+        Log.i("PageViewModel","Inside fetch user")
+        Thread.sleep(1000L)
+         return repo.fetchUser()
+    }
+
+    private suspend fun fetchSecondUser(repo: UserRepoImpl) : User? {
+        Log.i("PageViewModel","Inside fetchSecondUser")
+        return repo.fetchUser()
+
     }
 
     private fun showUser(user:User?) {
